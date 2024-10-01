@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ABCRetail_Part1.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1 class="text-center">Products</h1>
+<p>
+    <a href="@Url.Action("AddProduct", "Products")" class="btn btn-custom">Add New Product</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p class="text-center">There are no products available.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock Quantity</th>
+                <th>Image</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>@product.ProductName</td>
+                    <td style="width: 400px; word-wrap: break-word;">@product.Description</td>
+                    <td>@product.Category</td>
+                    <td>@($"R{product.Price:0.00}")</td>
+                    <td>@product.StockQuantity</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(product.ImageURL))
+                        {
+                            <img src="@product.ImageURL" alt="@product.ProductName" style="width:100px;height:125px; object-fit: contain;" />
+                        }
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="EditProduct" asp-route-partitionKey="@product.PartitionKey" asp-route-rowKey="@product.RowKey" class="btn btn-custom">Edit</a>
+                    </td>
+                    <td class="text-end">
+                        <form asp-action="DeleteProduct" method="post" style="display:inline;">
+                            <input type="hidden" name="partitionKey" value="@product.PartitionKey" />
+                            <input type="hidden" name="rowKey" value="@product.RowKey" />
+                            <input type="hidden" name="ImageURL" value="@product.ImageURL" />
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this product?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
